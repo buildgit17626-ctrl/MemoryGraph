@@ -6,11 +6,9 @@ import hashlib
 import json
 import platform
 from importlib.metadata import version
-from pathlib import Path
 
 import numpy as np
 import pandas as pd
-from huggingface_hub import snapshot_download
 from sentence_transformers import SentenceTransformer
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import paired_cosine_distances
@@ -19,7 +17,7 @@ from experiments.config import (
     DATA_PATH,
     EMBEDDING_MODEL,
     EMBEDDING_REVISION,
-    MODEL_CACHE,
+    MODEL_SNAPSHOT,
     RESULTS_DIR,
     TOP_K,
 )
@@ -31,15 +29,10 @@ def main() -> None:
         raise FileNotFoundError("Run python -m experiments.run_baselines first")
     frame = pd.read_csv(DATA_PATH)
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
-    snapshot = Path(
-        snapshot_download(
-            repo_id=EMBEDDING_MODEL,
-            revision=EMBEDDING_REVISION,
-            cache_dir=MODEL_CACHE,
-        )
-    )
-    model = SentenceTransformer(str(snapshot))
-    weight_path = snapshot / "model.safetensors"
+    if not (MODEL_SNAPSHOT / "model.safetensors").exists():
+        raise FileNotFoundError("Run python -m experiments.prepare_model first")
+    model = SentenceTransformer(str(MODEL_SNAPSHOT))
+    weight_path = MODEL_SNAPSHOT / "model.safetensors"
     texts = pd.unique(pd.concat([frame["query_text"], frame["memory_text"]], ignore_index=True))
     vectors = model.encode(texts.tolist(), normalize_embeddings=True, show_progress_bar=False)
     lookup = dict(zip(texts, vectors, strict=True))

@@ -5,7 +5,6 @@ import hashlib
 import json
 import platform
 from datetime import datetime, timezone
-from pathlib import Path
 
 from experiments.config import (
     DEMO_MEMORY,
