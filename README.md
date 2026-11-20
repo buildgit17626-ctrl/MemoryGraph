@@ -8,7 +8,7 @@ Can selective retrieval of relevant user memories improve AI coding assistance w
 
 ## Setup
 
-The owner approved Python 3.12 as an exception to the original 3.11 workspace default. From this directory:
+Python 3.12 is approved for this MVP. From this directory:
 
 ```powershell
 py -3.12 -m venv .venv
@@ -46,12 +46,12 @@ Precision, recall, and F1 describe binary relevance classification. Precision@3 
 .\.venv\Scripts\streamlit.exe run app.py
 ```
 
-The demo lets a user inspect, add, edit, and delete local memories, compare TF-IDF, semantic, and graph-assisted retrieval, and see the exact selected context. Optional Ollama inference compares a prompt with and without retrieved memories. The user enters an already installed local model name; no generated code is executed. Latency is measured locally, and token counts are displayed only if Ollama supplies them. Correctness and energy are not automatically measured.
+The demo lets a user add, edit, and delete local memories; load a fictional example; inspect every candidate score; compare TF-IDF, semantic, and graph-assisted retrieval; and choose the exact context. An explicit approval checkbox is required before optional Ollama inference. The app warns about explicit pytest/unittest or VS Code/PyCharm preference conflicts and blocks a call if both sides are selected. This narrow detector does not resolve arbitrary contradictions. The comparison runs the same question with and without approved memory. The user enters an already installed local model name; no generated code is executed. Latency is measured locally, and token counts are displayed only if Ollama supplies them. Correctness and energy are not automatically measured.
 
-For a fixed two-prompt local inference demonstration, start Ollama with the pre-registered `qwen2.5-coder:0.5b` model installed, then run `python -m experiments.run_inference_demo`. Each run creates a unique raw JSONL file, preserving failed calls as well as successes. The two prompts differ in whether a fictional pytest preference is supplied. Output text, Ollama token counts, and wall-clock latency are logged; correctness is not scored and energy is not measured. One local run produced 46/128 prompt/output tokens without memory and 63/128 with memory; these two generations do not establish an effect on quality or speed.
+For a fixed two-prompt local inference demonstration, start Ollama with the pre-registered `qwen2.5-coder:0.5b` model installed, then run `python -m experiments.run_inference_demo`. Each run creates a unique raw JSONL file, preserving failed calls as well as successes. The two prompts differ in whether a fictional pytest preference is supplied. Output text, Ollama token counts, and wall-clock latency are logged; correctness is not scored and energy is not measured. One local run produced 46/128 prompt/output tokens without memory and 63/128 with memory. Despite the pytest preference, the memory-enabled response began with `import unittest`. These two capped generations do not establish an effect on quality or speed.
 
 ## Limitations and next steps
 
-The dataset is small, templated, and synthetic. Grouped validation reduces persona leakage but does not remove template shortcuts. The graph uses a fixed alias vocabulary. The local demo has no authentication or multi-user privacy boundary. Future work needs genuine consenting-user evaluation, stronger memory extraction, conflict handling, more robust retrieval, and a documented energy method before any energy claim.
+The dataset is small, templated, and synthetic. Grouped validation reduces persona leakage but does not remove template shortcuts. The graph uses a fixed alias vocabulary. Conflict detection covers only two explicit preference pairs. The local demo has no authentication or multi-user privacy boundary. Future work needs genuine consenting-user evaluation, stronger memory extraction and conflict handling, more robust retrieval, response scoring, and a documented energy method before any energy claim.
 
-See `docs/SAFETY.md`, `docs/REFERENCES.md`, and `docs/learning/P1.md`.
+See `docs/SAFETY.md`, `docs/REFERENCES.md`, and `docs/learning/P2.md`.
